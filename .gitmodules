@@ -1,0 +1,3 @@
+[submodule "FrogUtil"]
+	path = FrogUtil
+	url = https://github.com/FrogIf/FrogUtil.git
