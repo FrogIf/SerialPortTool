@@ -63,6 +63,7 @@
             this.rBtnSendByte = new System.Windows.Forms.RadioButton();
             this.labelSendMethod = new System.Windows.Forms.Label();
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
+            this.rtBoxReceive = new System.Windows.Forms.RichTextBox();
             this.gBoxReceive = new System.Windows.Forms.GroupBox();
             this.panelRecType = new System.Windows.Forms.Panel();
             this.rBtnReceiveHex = new System.Windows.Forms.RadioButton();
@@ -70,9 +71,8 @@
             this.btnSaveData = new System.Windows.Forms.Button();
             this.btnReceiveCountReset = new System.Windows.Forms.Button();
             this.btnClearReceive = new System.Windows.Forms.Button();
-            this.labelMessage = new System.Windows.Forms.Label();
-            this.rtBoxReceive = new System.Windows.Forms.RichTextBox();
             this.rtBoxSend = new System.Windows.Forms.RichTextBox();
+            this.labelMessage = new System.Windows.Forms.Label();
             this.panelControl.SuspendLayout();
             this.panelReceivedCount.SuspendLayout();
             this.panelSendCount.SuspendLayout();
@@ -471,6 +471,20 @@
             this.splitContainerMain.SplitterDistance = 349;
             this.splitContainerMain.TabIndex = 3;
             // 
+            // rtBoxReceive
+            // 
+            this.rtBoxReceive.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.rtBoxReceive.Location = new System.Drawing.Point(14, 34);
+            this.rtBoxReceive.Name = "rtBoxReceive";
+            this.rtBoxReceive.ReadOnly = true;
+            this.rtBoxReceive.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.rtBoxReceive.Size = new System.Drawing.Size(617, 300);
+            this.rtBoxReceive.TabIndex = 4;
+            this.rtBoxReceive.Text = "";
+            this.rtBoxReceive.TextChanged += new System.EventHandler(this.rtBoxReceive_TextChanged);
+            // 
             // gBoxReceive
             // 
             this.gBoxReceive.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -548,6 +562,18 @@
             this.btnClearReceive.UseVisualStyleBackColor = true;
             this.btnClearReceive.Click += new System.EventHandler(this.btnClearReceive_Click);
             // 
+            // rtBoxSend
+            // 
+            this.rtBoxSend.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.rtBoxSend.Location = new System.Drawing.Point(14, 32);
+            this.rtBoxSend.Name = "rtBoxSend";
+            this.rtBoxSend.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.rtBoxSend.Size = new System.Drawing.Size(530, 136);
+            this.rtBoxSend.TabIndex = 4;
+            this.rtBoxSend.Text = "";
+            // 
             // labelMessage
             // 
             this.labelMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -557,26 +583,6 @@
             this.labelMessage.Size = new System.Drawing.Size(29, 12);
             this.labelMessage.TabIndex = 4;
             this.labelMessage.Text = "消息";
-            // 
-            // rtBoxReceive
-            // 
-            this.rtBoxReceive.Location = new System.Drawing.Point(14, 34);
-            this.rtBoxReceive.Name = "rtBoxReceive";
-            this.rtBoxReceive.ReadOnly = true;
-            this.rtBoxReceive.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.rtBoxReceive.Size = new System.Drawing.Size(617, 300);
-            this.rtBoxReceive.TabIndex = 4;
-            this.rtBoxReceive.Text = "";
-            this.rtBoxReceive.TextChanged += new System.EventHandler(this.rtBoxReceive_TextChanged);
-            // 
-            // rtBoxSend
-            // 
-            this.rtBoxSend.Location = new System.Drawing.Point(14, 32);
-            this.rtBoxSend.Name = "rtBoxSend";
-            this.rtBoxSend.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.rtBoxSend.Size = new System.Drawing.Size(530, 136);
-            this.rtBoxSend.TabIndex = 4;
-            this.rtBoxSend.Text = "";
             // 
             // MainForm
             // 
