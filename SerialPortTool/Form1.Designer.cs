@@ -44,13 +44,11 @@
             this.labelReceivedCount = new System.Windows.Forms.Label();
             this.labelReceivedText = new System.Windows.Forms.Label();
             this.labelRec = new System.Windows.Forms.Label();
-            this.tBoxReceive = new System.Windows.Forms.TextBox();
             this.labelSend = new System.Windows.Forms.Label();
             this.panelSendCount = new System.Windows.Forms.Panel();
             this.labelSendedUnit = new System.Windows.Forms.Label();
             this.labelSendedCount = new System.Windows.Forms.Label();
             this.labelSendedText = new System.Windows.Forms.Label();
-            this.tBoxSend = new System.Windows.Forms.TextBox();
             this.gBoxSendConfig = new System.Windows.Forms.GroupBox();
             this.gBoxAutoSend = new System.Windows.Forms.GroupBox();
             this.btnStartAutoSend = new System.Windows.Forms.Button();
@@ -73,6 +71,8 @@
             this.btnReceiveCountReset = new System.Windows.Forms.Button();
             this.btnClearReceive = new System.Windows.Forms.Button();
             this.labelMessage = new System.Windows.Forms.Label();
+            this.rtBoxReceive = new System.Windows.Forms.RichTextBox();
+            this.rtBoxSend = new System.Windows.Forms.RichTextBox();
             this.panelControl.SuspendLayout();
             this.panelReceivedCount.SuspendLayout();
             this.panelSendCount.SuspendLayout();
@@ -250,18 +250,6 @@
             this.labelRec.TabIndex = 0;
             this.labelRec.Text = "接收区:";
             // 
-            // tBoxReceive
-            // 
-            this.tBoxReceive.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tBoxReceive.Location = new System.Drawing.Point(11, 34);
-            this.tBoxReceive.Multiline = true;
-            this.tBoxReceive.Name = "tBoxReceive";
-            this.tBoxReceive.ReadOnly = true;
-            this.tBoxReceive.Size = new System.Drawing.Size(624, 300);
-            this.tBoxReceive.TabIndex = 2;
-            // 
             // labelSend
             // 
             this.labelSend.AutoSize = true;
@@ -308,17 +296,6 @@
             this.labelSendedText.Size = new System.Drawing.Size(47, 12);
             this.labelSendedText.TabIndex = 0;
             this.labelSendedText.Text = "已发送:";
-            // 
-            // tBoxSend
-            // 
-            this.tBoxSend.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tBoxSend.Location = new System.Drawing.Point(14, 36);
-            this.tBoxSend.Multiline = true;
-            this.tBoxSend.Name = "tBoxSend";
-            this.tBoxSend.Size = new System.Drawing.Size(528, 131);
-            this.tBoxSend.TabIndex = 2;
             // 
             // gBoxSendConfig
             // 
@@ -479,16 +456,16 @@
             // 
             // splitContainerMain.Panel1
             // 
+            this.splitContainerMain.Panel1.Controls.Add(this.rtBoxReceive);
             this.splitContainerMain.Panel1.Controls.Add(this.gBoxReceive);
-            this.splitContainerMain.Panel1.Controls.Add(this.tBoxReceive);
             this.splitContainerMain.Panel1.Controls.Add(this.labelRec);
             this.splitContainerMain.Panel1.Controls.Add(this.panelReceivedCount);
             // 
             // splitContainerMain.Panel2
             // 
+            this.splitContainerMain.Panel2.Controls.Add(this.rtBoxSend);
             this.splitContainerMain.Panel2.Controls.Add(this.gBoxSendConfig);
             this.splitContainerMain.Panel2.Controls.Add(this.labelSend);
-            this.splitContainerMain.Panel2.Controls.Add(this.tBoxSend);
             this.splitContainerMain.Panel2.Controls.Add(this.panelSendCount);
             this.splitContainerMain.Size = new System.Drawing.Size(734, 528);
             this.splitContainerMain.SplitterDistance = 349;
@@ -581,6 +558,26 @@
             this.labelMessage.TabIndex = 4;
             this.labelMessage.Text = "消息";
             // 
+            // rtBoxReceive
+            // 
+            this.rtBoxReceive.Location = new System.Drawing.Point(14, 34);
+            this.rtBoxReceive.Name = "rtBoxReceive";
+            this.rtBoxReceive.ReadOnly = true;
+            this.rtBoxReceive.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.rtBoxReceive.Size = new System.Drawing.Size(617, 300);
+            this.rtBoxReceive.TabIndex = 4;
+            this.rtBoxReceive.Text = "";
+            this.rtBoxReceive.TextChanged += new System.EventHandler(this.rtBoxReceive_TextChanged);
+            // 
+            // rtBoxSend
+            // 
+            this.rtBoxSend.Location = new System.Drawing.Point(14, 32);
+            this.rtBoxSend.Name = "rtBoxSend";
+            this.rtBoxSend.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.rtBoxSend.Size = new System.Drawing.Size(530, 136);
+            this.rtBoxSend.TabIndex = 4;
+            this.rtBoxSend.Text = "";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -637,13 +634,11 @@
         private System.Windows.Forms.Label labelReceivedText;
         private System.Windows.Forms.Label labelReceivedCount;
         private System.Windows.Forms.Label labelReceivedUnit;
-        private System.Windows.Forms.TextBox tBoxReceive;
         private System.Windows.Forms.Label labelSend;
         private System.Windows.Forms.Panel panelSendCount;
         private System.Windows.Forms.Label labelSendedText;
         private System.Windows.Forms.Label labelSendedCount;
         private System.Windows.Forms.Label labelSendedUnit;
-        private System.Windows.Forms.TextBox tBoxSend;
         private System.Windows.Forms.GroupBox gBoxSendConfig;
         private System.Windows.Forms.Label labelSendMethod;
         private System.Windows.Forms.RadioButton rBtnSendByte;
@@ -667,6 +662,8 @@
         private System.Windows.Forms.RadioButton rBtnReceiveHex;
         private System.Windows.Forms.Button btnRefreshSerialName;
         private System.Windows.Forms.Label labelMessage;
+        private System.Windows.Forms.RichTextBox rtBoxReceive;
+        private System.Windows.Forms.RichTextBox rtBoxSend;
     }
 }
 

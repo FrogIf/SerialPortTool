@@ -241,7 +241,7 @@ namespace SerialPortTool
 
         private void btnClearReceive_Click(object sender, EventArgs e)
         {
-            tBoxReceive.Clear();
+            rtBoxReceive.Clear();
         }
 
         private void btnReceiveCountReset_Click(object sender, EventArgs e)
@@ -252,13 +252,13 @@ namespace SerialPortTool
 
         private void ReceiveDataDisplay(string input, int count)
         {
-            this.tBoxReceive.Text += input;
+            this.rtBoxReceive.Text += input;
             receivedDataByteNum += count;
             labelReceivedCount.Text = receivedDataByteNum.ToString();
         }
         private void btnSaveData_Click(object sender, EventArgs e)
         {
-            string text = tBoxReceive.Text;
+            string text = rtBoxReceive.Text;
             if (StringUtil.IsEmpty(text))
             {
                 return;
@@ -281,6 +281,12 @@ namespace SerialPortTool
             }
             this.logger.info("保存成功!存储路径:" + System.Environment.CurrentDirectory + "\\" + fileName);
         }
+
+        private void rtBoxReceive_TextChanged(object sender, EventArgs e)
+        {
+            rtBoxReceive.SelectionStart = rtBoxReceive.TextLength;
+            rtBoxReceive.ScrollToCaret();
+        }
         #endregion
 
         #region 发送数据
@@ -295,7 +301,7 @@ namespace SerialPortTool
                 logger.error("串口未打开");
                 return;
             }
-            string text = this.tBoxSend.Text;
+            string text = this.rtBoxSend.Text;
             if (StringUtil.IsEmpty(text))
             {
                 logger.warn("没有可以发送的内容!");
@@ -316,7 +322,7 @@ namespace SerialPortTool
 
         private void btnClearSend_Click(object sender, EventArgs e)
         {
-            tBoxSend.Clear();
+            rtBoxSend.Clear();
         }
 
         private void btnSendCount_Click(object sender, EventArgs e)
@@ -343,7 +349,7 @@ namespace SerialPortTool
                         logger.warn("文件内容不存在!");
                         return;
                     }
-                    tBoxSend.Text = dataReadRoute;
+                    rtBoxSend.Text = dataReadRoute;
                 }
                 catch
                 {
@@ -367,14 +373,14 @@ namespace SerialPortTool
                 logger.error("串口未打开");
                 return;
             }
-            if (StringUtil.IsEmpty(tBoxSend.Text))
+            if (StringUtil.IsEmpty(rtBoxSend.Text))
             {
                 logger.warn("没有可以发送的内容!");
                 return;
             }
             if (TextHolder.START.Equals(btnStartAutoSend.Text))
             {
-                tBoxSend.ReadOnly = true;
+                rtBoxSend.ReadOnly = true;
                 btnStartAutoSend.Text = TextHolder.END;
                 switchSendControl(false);
                 timerSendAuto.Interval = Convert.ToInt64(numUpDownAutoSend.Value);
@@ -382,7 +388,7 @@ namespace SerialPortTool
             }
             else
             {
-                tBoxSend.ReadOnly = false;
+                rtBoxSend.ReadOnly = false;
                 btnStartAutoSend.Text = TextHolder.START;
                 switchSendControl(true);
                 timerSendAuto.Stop();
@@ -403,10 +409,12 @@ namespace SerialPortTool
         /// <param name="e"></param>
         private void TimerSendAutoTick(object sender, ElapsedEventArgs e)
         {
-            sendData(tBoxSend.Text);
+            rtBoxSend.Invoke(new MethodInvoker(() =>
+            {
+                sendData(rtBoxSend.Text);
+            }));
         }
+
         #endregion
-
-
     }
 }
