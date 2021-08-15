@@ -261,6 +261,7 @@
             // 
             // panelSendCount
             // 
+            this.panelSendCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.panelSendCount.Controls.Add(this.labelSendedUnit);
             this.panelSendCount.Controls.Add(this.labelSendedCount);
             this.panelSendCount.Controls.Add(this.labelSendedText);
