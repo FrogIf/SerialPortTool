@@ -531,7 +531,6 @@
             this.rBtnReceiveByte.TabStop = true;
             this.rBtnReceiveByte.Text = "字节";
             this.rBtnReceiveByte.UseVisualStyleBackColor = true;
-            this.rBtnReceiveByte.CheckedChanged += new System.EventHandler(this.rBtnReceiveByte_CheckedChanged);
             // 
             // btnSaveData
             // 

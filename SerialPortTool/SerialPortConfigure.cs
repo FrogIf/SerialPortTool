@@ -3,7 +3,7 @@ using System.IO.Ports;
 
 namespace SerialPortTool
 {
-    class SerialPortConfiguration
+    class SerialPortConfigure
     {
         /// <summary>
         /// 默认波特率

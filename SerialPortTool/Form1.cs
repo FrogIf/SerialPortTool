@@ -1,5 +1,6 @@
 ﻿using Frog.Util.Common;
 using Frog.Util.Connection;
+using Frog.Util.Extend;
 using Frog.Util.Log;
 using Frog.Util.WinForm;
 using System;
@@ -8,12 +9,13 @@ using System.IO;
 using System.Text;
 using System.Timers;
 using System.Windows.Forms;
+using static Frog.Util.Connection.SerialPortConnection;
 
 namespace SerialPortTool
 {
     public partial class MainForm : Form
     {
-        private readonly SerialPortOperator serialPortOperator;
+        private readonly IConnection connection;
 
         private readonly ILogger logger = LoggerFactory.GetRootLogger();
 
@@ -21,10 +23,10 @@ namespace SerialPortTool
         {
             InitializeComponent();
             // 设置消息接收监听
-            List<SerialPortOperator.ReceiveDataHandler> handlers = new List<SerialPortOperator.ReceiveDataHandler>();
+            List<IDataConsumer> consumers = new List<IDataConsumer>();
             ReceiveDataHandler receiveDataHandler = new ReceiveDataHandler(this, new ReceiveDataHandler.ReceiveDataUpdateForm(ReceiveDataDisplay));
-            handlers.Add(receiveDataHandler);
-            this.serialPortOperator = new SerialPortOperator(handlers);
+            consumers.Add(receiveDataHandler);
+            this.connection = new SerialPortConnection(consumers);
             LoggerFactory.setRootLogger(new MessageLogger(this.labelMessage));
         }
 
@@ -46,13 +48,13 @@ namespace SerialPortTool
             this.refreshSerialName();
 
             // 波特率下拉列表值加载
-            LoadComboBoxItems(cBoxBaud, SerialPortConfiguration.DEFAULT_BAUD_RATE, SerialPortConfiguration.BAUD_ARR);
+            LoadComboBoxItems(cBoxBaud, SerialPortConfigure.DEFAULT_BAUD_RATE, SerialPortConfigure.BAUD_ARR);
 
             // 停止位下拉列表值加载
-            LoadComboBoxItems(cBoxStopBit, SerialPortConfiguration.DEFAULT_STOP_BIT, SerialPortConfiguration.STOP_BIT_ARR);
+            LoadComboBoxItems(cBoxStopBit, SerialPortConfigure.DEFAULT_STOP_BIT, SerialPortConfigure.STOP_BIT_ARR);
 
             // 数据位下拉列表值加载
-            LoadComboBoxItems(cBoxDataBit, SerialPortConfiguration.DEFAULT_DATA_BIT, SerialPortConfiguration.DATA_BIT_ARR);
+            LoadComboBoxItems(cBoxDataBit, SerialPortConfigure.DEFAULT_DATA_BIT, SerialPortConfigure.DATA_BIT_ARR);
         }
 
         private readonly string[] EMPTY_STRING_ARR = new string[0];
@@ -83,19 +85,20 @@ namespace SerialPortTool
                     return;
                 }
                 btnOpenSerialPort.Text = TextHolder.CLOSE_SERIAL_PORT;
-                serialPortOperator.SetPortName(cBoxSerialName.Text);
 
-                serialPortOperator.SetBaudRate(Convert.ToInt32(cBoxBaud.Text));
-                serialPortOperator.SetStopBits(SerialPortOperator.GetStopBits(cBoxStopBit.Text));
-                serialPortOperator.SetDataBits(Convert.ToInt32(cBoxDataBit.Text));
+                SerialPortConfiguration config = new SerialPortConfiguration();
+                config.PortName = cBoxSerialName.Text;
+                config.BaudRate = Convert.ToInt32(cBoxBaud.Text);
+                config.StopBitVal = SerialPortConfiguration.GetStopBits(cBoxStopBit.Text);
+                config.DataBits = Convert.ToInt32(cBoxDataBit.Text);
 
-                serialPortOperator.OpenSerialPort();
+                connection.Open(config);
                 this.switchPortControlPanelStatus(false);
                 this.logger.info("串口已打开.");
             }
             else
             {
-                serialPortOperator.CloseSerialPort(() =>
+                connection.Close(() =>
                 {
                     btnOpenSerialPort.Text = TextHolder.OPEN_SERIAL_PORT;
                     this.switchPortControlPanelStatus(true);
@@ -116,10 +119,10 @@ namespace SerialPortTool
         /// </summary>
         private void refreshSerialName()
         {
-            if (!serialPortOperator.IsOpen())
+            if (!connection.IsOpen())
             {
                 cBoxSerialName.Items.Clear();
-                string[] ports = serialPortOperator.GetAvailablePortName();
+                string[] ports = connection.GetAvailableTargets();
                 if (ports == null)
                 {
                     ports = EMPTY_STRING_ARR;
@@ -158,9 +161,9 @@ namespace SerialPortTool
         // 窗体关闭过程中, 回调
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (serialPortOperator.IsOpen())
+            if (connection.IsOpen())
             {
-                serialPortOperator.CloseSerialPort(() =>
+                connection.Close(() =>
                 {
                     this.btnOpenSerialPort.Text = TextHolder.OPEN_SERIAL_PORT;
                     this.switchPortControlPanelStatus(true);
@@ -185,28 +188,15 @@ namespace SerialPortTool
         #region 接收数据
         private int receivedDataByteNum = 0;   // 接收到的数据的字节数
 
-        // 接收区, 切换数据类型
-        private void rBtnReceiveByte_CheckedChanged(object sender, EventArgs e)
-        {
-            if (this.rBtnReceiveByte.Checked)
-            {
-                this.serialPortOperator.ReceiveDataType = SerialPortOperator.DataType.CHAR;
-            }
-            else
-            {
-                this.serialPortOperator.ReceiveDataType = SerialPortOperator.DataType.HEX;
-            }
-        }
-
         /// <summary>
         /// 串口接收消息处理器
         /// </summary>
-        private class ReceiveDataHandler : SerialPortOperator.ReceiveDataHandler
+        private class ReceiveDataHandler : IDataConsumer
         {
 
             private readonly Form form;
 
-            public delegate void ReceiveDataUpdateForm(string input, int count);
+            public delegate void ReceiveDataUpdateForm(byte[] bytes);
 
             private readonly ReceiveDataUpdateForm updateMethod;
 
@@ -216,26 +206,9 @@ namespace SerialPortTool
                 this.updateMethod = updateMethod;
             }
 
-            public void Handle(string message, int count)
+            public void Consume(byte[] bytes)
             {
-                this.form.Invoke(updateMethod, message, count);
-            }
-
-            public void Handle(byte[] buf, int count)
-            {
-                if (buf != null && buf.Length > 0)
-                {
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < buf.Length; i++)
-                    {
-                        if (buf[i] <= 0x0F)
-                        {
-                            sb.Append("0");
-                        }
-                        sb.Append(Convert.ToString(buf[i], 16).ToUpper() + " ");
-                    }
-                    this.form.Invoke(updateMethod, sb.ToString(), count);
-                }
+                this.form.Invoke(updateMethod, bytes);
             }
         }
 
@@ -250,11 +223,18 @@ namespace SerialPortTool
             receivedDataByteNum = 0;
         }
 
-        private void ReceiveDataDisplay(string input, int count)
+        private void ReceiveDataDisplay(byte[] bytes)
         {
-            this.rtBoxReceive.Text += input;
-            receivedDataByteNum += count;
+            receivedDataByteNum += bytes.Length;
             labelReceivedCount.Text = receivedDataByteNum.ToString();
+            if (this.rBtnReceiveHex.Checked)
+            {
+                this.rtBoxReceive.Text += BytesDataUtil.ConvertToHex(bytes);
+            }
+            else
+            {
+                this.rtBoxReceive.Text += Encoding.UTF8.GetString(bytes);
+            }
         }
         private void btnSaveData_Click(object sender, EventArgs e)
         {
@@ -296,7 +276,7 @@ namespace SerialPortTool
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            if (!serialPortOperator.IsOpen())
+            if (!connection.IsOpen())
             {
                 logger.error("串口未打开");
                 return;
@@ -312,16 +292,25 @@ namespace SerialPortTool
 
         private void sendData(string text)
         {
-            SerialPortOperator.DataType sendDataType = this.rBtnSendByte.Checked ? SerialPortOperator.DataType.CHAR : SerialPortOperator.DataType.HEX;
-            if(sendDataType == SerialPortOperator.DataType.HEX)
+            bool sendHex = this.rBtnSendByte.Checked;
+            if (sendHex)
+            {
+                connection.SendData(Encoding.UTF8.GetBytes(text));
+            }
+            else
             {
                 text = text.Trim();
+                string tip = null;
+                if (!BytesDataUtil.HexDataValid(text, ref tip))
+                {
+                    logger.warn(tip);
+                    return;
+                }
+                connection.SendData(BytesDataUtil.ConertToBytesViaHex(text));
+                
             }
-            if (!this.rBtnSendByte.Checked && !SerialPortOperator.HexDataValid(text)) // 如果是HEX
-            {
-                return;
-            }
-            serialPortOperator.SendData(text, sendDataType);
+            
+            
             sendedDataByteNum += text.Length;
             this.Invoke(new MethodInvoker(() => {
                 labelSendedCount.Text = sendedDataByteNum.ToString();
@@ -376,7 +365,7 @@ namespace SerialPortTool
 
         private void btnStartAutoSend_Click(object sender, EventArgs e)
         {
-            if (!serialPortOperator.IsOpen())
+            if (!connection.IsOpen())
             {
                 logger.error("串口未打开");
                 return;
