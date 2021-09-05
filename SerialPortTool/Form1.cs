@@ -313,6 +313,10 @@ namespace SerialPortTool
         private void sendData(string text)
         {
             SerialPortOperator.DataType sendDataType = this.rBtnSendByte.Checked ? SerialPortOperator.DataType.CHAR : SerialPortOperator.DataType.HEX;
+            if(sendDataType == SerialPortOperator.DataType.HEX)
+            {
+                text = text.Trim();
+            }
             if (!this.rBtnSendByte.Checked && !SerialPortOperator.HexDataValid(text)) // 如果是HEX
             {
                 return;
