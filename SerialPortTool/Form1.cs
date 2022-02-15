@@ -34,6 +34,7 @@ namespace SerialPortTool
         private void MainForm_Load(object sender, EventArgs e)
         {
             Init();
+            this.Text = this.Text.Trim() + " " + AppInfo.APP_VERSION;
             this.timerSendAuto = new System.Timers.Timer(Convert.ToInt64(numUpDownAutoSend.Value));
             this.timerSendAuto.AutoReset = true;    // 重复执行
             this.timerSendAuto.Elapsed += new ElapsedEventHandler(TimerSendAutoTick);
